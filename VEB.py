@@ -1,6 +1,6 @@
 import math
 
-# Stores a VEB-tree where the values may be between 0 and u (where u in an integral square root)
+# Stores a VEB-tree where the values may be between 0 and x (where x is the lowest continuous power of two less than u)
 
 class VEB:
 
