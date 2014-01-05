@@ -1,6 +1,6 @@
 import math
 
-# Stores a VEB-tree where the values may be between 0 and u (where u in an integral square root)
+# Stores a VEB-tree where the values may be between 0 and x (where x is the lowest power hierarchal squaring starting at 2 less than or equal to u)
 
 class VEB:
 
@@ -17,13 +17,13 @@ class VEB:
 		if u < 0:
 			raise Exception("u cannot be less than 0 --- u = " + str(u));
 		self.u = 2;
-		while self.u <= u:
-			self.u *= self.u	# get the lowest power of two that is higher than u
+		while self.u < u:
+			self.u *= self.u
 		self.min = None
 		self.max = None
 		if (u > 2):
-			self.clusters = [ VEB(self.high(self.u)) for i in range(0, self.high(self.u)) ]
-			self.summary = VEB(self.high(self.u))
+			self.clusters = [ None for i in range(self.high(self.u)) ] #VEB(self.high(self.u))
+			self.summary = None # VEB(self.high(self.u))
 
 	def member(self, x):
 		if x == self.min or x == self.max:	# found it as the minimum or maximum
@@ -31,7 +31,11 @@ class VEB:
 		elif self.u <= 2:					# has not found it in the "leaf"
 			return False
 		else:
-			return self.clusters[self.high(x)].member(self.low(x))	# looks for it in the clusters inside
+			cluster = self.clusters[self.high(x)]
+			if cluster != None:
+				return cluster.member(self.low(x))	# looks for it in the clusters inside
+			else:
+				return False
 
 	def successor(self, x):
 		if self.u <= 2:						 
@@ -42,16 +46,26 @@ class VEB:
 		elif self.min != None and x < self.min: # x is less than everything in the tree, returns the minimum
 			return self.min
 		else:
-			maxlow = self.clusters[self.high(x)].max
-			if maxlow != None and self.low(x) < maxlow:
-				offset = self.clusters[self.high(x)].successor(self.low(x))
-				return self.index(self.high(x), offset)
+			h = self.high(x)
+			l = self.low(x)
+			maxlow = None
+			cluster = self.clusters[h]
+			if cluster != None:
+				maxlow = cluster.max
+			if maxlow != None and l < maxlow:
+				offset = cluster.successor(l)
+				return self.index(h, offset)
 			else:
-				succcluster = self.summary.successor(self.high(x))
+				succcluster = None
+				if self.summary != None:
+					succcluster = self.summary.successor(h)
 				if succcluster == None:
 					return None
 				else:
-					offset = self.clusters[succcluster].min
+					cluster2 = self.clusters[succcluster]
+					offset = 0
+					if cluster2 != None:
+						offset = cluster2.min
 					return self.index(succcluster, offset)
 
 	def predecessor(self, x):
@@ -63,19 +77,31 @@ class VEB:
 		elif self.max != None and x > self.max:
 			return self.max
 		else:
-			minlow = self.clusters[self.high(x)].min
-			if minlow != None and self.low(x) > minlow:
-				offset = self.clusters[self.high(x)].predecessor(self.low(x))
-				return self.index(self.high(x), offset)
+			h = self.high(x)
+			l = self.low(x)
+			minlow = None
+			cluster = self.clusters[h]
+			if cluster != None:
+				minlow = cluster.min
+			if minlow != None and l > minlow:
+				offset = cluster.predecessor(l)
+				if offset == None: 
+					offset = 0
+				return self.index(h, offset)
 			else:
-				predcluster = self.summary.predecessor(self.high(x))
+				predcluster = None
+				if self.summary != None:
+					predcluster = self.summary.predecessor(h)
 				if predcluster == None:
 					if self.min != None and x > self.min:
 						return self.min
 					else:
 						return None
 				else:
-					offset = self.clusters[predcluster].max
+					cluster2 = self.clusters[predcluster]
+					offset = 0
+					if cluster2 != None:
+						offset = cluster2.max
 					return self.index(predcluster, offset)
 
 	def emptyInsert(self, x):
@@ -91,10 +117,15 @@ class VEB:
 				self.min = x
 				x = temp
 			if self.u > 2:
-				if self.clusters[ self.high(x) ].min == None:
-					self.summary.insert(self.high(x))
-					self.clusters[self.high(x)].emptyInsert(self.low(x))
+				h = self.high(x)
+				if self.clusters[h] == None:
+					self.clusters[h] = VEB(self.high(self.u))
+				if self.summary == None:
+					self.summary = VEB(self.high(self.u))
+				if self.clusters[h].min == None:
+					self.summary.insert(h)
+					self.clusters[h].emptyInsert(self.low(x))
 				else:
-					self.clusters[self.high(x)].insert(self.low(x))
+					self.clusters[h].insert(self.low(x))
 			if x > self.max:
 				self.max = x
