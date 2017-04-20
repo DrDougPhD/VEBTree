@@ -68,42 +68,41 @@ def test_speed(n=DEFAULT_TEST_SIZE):
     for i in range(n): 
         number = random.randint(0, veb.u-1)
         numbers.add(number)
-    
-    total_time = 0
-    starttime = time.time()
-    for number in numbers:
-        veb.insert(number)
-    total_time = (time.time() - starttime)
-            
-    ns = float(len(numbers))
-    total_time = float(total_time)
 
-    print('Speed per insertion: {} seconds'.format((total_time / ns)))
+    with Timer(message='Speed per insertion') as t:
+        for number in numbers:
+            veb.insert(number)
 
-    total_time = 0
-    starttime = time.time()
-    for number in numbers:
-        veb.member(number)
-    total_time = (time.time() - starttime)   
+    with Timer(message='Speed per membership query') as t:
+        for number in numbers:
+            veb.member(number)
 
-    print('Speed per membership query: {} seconds'.format(
-        (total_time / ns)))
+    with Timer(message='Speed per predecessor query') as t:
+        for number in numbers:
+            veb.predecessor(number)
 
-    total_time = 0
-    starttime = time.time()
-    for number in numbers:
-        veb.predecessor(number)
-    total_time = (time.time() - starttime)
+    with Timer(message='Speed per successor query') as t:
+        for number in numbers:
+            veb.successor(number)
 
-    print('Speed per predecessor query: {} seconds'.format((total_time / ns)))
+"""
+Source: http://preshing.com/20110924/timing-your-code-using-pythons-with-statement/
+"""
+class Timer(object):
+    def __init__(self, message=None):
+        self.message = message
 
-    total_time = 0
-    starttime = time.time()
-    for number in numbers:
-        veb.successor(number)
-    total_time = (time.time() - starttime)
-    
-    print('Speed per successor query: {} seconds'.format((total_time / ns)))
+    def __enter__(self):
+        self.start = time.clock()
+        return self
+
+    def __exit__(self, *args):
+        self.end = time.clock()
+        self.interval = self.end - self.start
+
+        if self.message:
+            print('{0.message}: {0.interval} seconds'.format(self))
+
 
 test_correctness(n=500)
 test_speed(n=500)
