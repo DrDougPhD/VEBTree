@@ -1,5 +1,6 @@
 """
 Forked from https://github.com/erikwaing/VEBTree
+Python 3 and Python 2 compliant.
 """
 
 import math
@@ -17,21 +18,27 @@ class VEB:
     def __init__(self, u):
         if u < 0:
             raise Exception("u cannot be less than 0 --- u = " + str(u))
+
+        self.min = None
+        self.max = None
+
+        # TODO: probably a better way to do this
         self.u = 2
         while self.u < u:
             self.u *= self.u
-        self.min = None
-        self.max = None
+
         if (u > 2):
             self.clusters = [None for i in
-                             range(self.high(self.u))]  # VEB(self.high(self.u))
-            self.summary = None  # VEB(self.high(self.u))
+                             range(self.high(self.u))]
+            self.summary = None
 
     def member(self, x):
-        if x == self.min or x == self.max:  # found it as the minimum or maximum
+        if x == self.min or x == self.max:
+            # found it as the minimum or maximum
             return True
 
-        elif self.u <= 2:  # has not found it in the 'leaf'
+        elif self.u <= 2:
+            # has not found it in the 'leaf'
             return False
 
         else:
