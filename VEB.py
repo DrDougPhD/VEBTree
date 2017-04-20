@@ -16,8 +16,8 @@ class VEB:
 
     def __init__(self, u):
         if u < 0:
-            raise Exception("u cannot be less than 0 --- u = " + str(u));
-        self.u = 2;
+            raise Exception("u cannot be less than 0 --- u = " + str(u))
+        self.u = 2
         while self.u < u:
             self.u *= self.u
         self.min = None
@@ -136,21 +136,27 @@ class VEB:
     def insert(self, x):
         if self.min is None:
             self.emptyInsert(x)
+
         else:
             if x < self.min:
                 temp = self.min
                 self.min = x
                 x = temp
+
             if self.u > 2:
                 h = self.high(x)
                 if self.clusters[h] is None:
                     self.clusters[h] = VEB(self.high(self.u))
+
                 if self.summary is None:
                     self.summary = VEB(self.high(self.u))
+
                 if self.clusters[h].min is None:
                     self.summary.insert(h)
                     self.clusters[h].emptyInsert(self.low(x))
+
                 else:
                     self.clusters[h].insert(self.low(x))
+
             if x > self.max:
                 self.max = x
