@@ -35,25 +35,25 @@ def test_correctness(n=DEFAULT_TEST_SIZE):
     for num in list(non_member_numbers):
         if veb.member(num):
             error += 1
-    for num in list(numbers):
+    for num in numbers:
         if not veb.member(num):
             error += 1
     print('Error Number For Membership was {}'.format(error))
 
     print('Testing for successor')
     # test for successor
-    listofnums = sorted(numbers)
+    sorted_numbers = sorted(numbers)
     error = 0
-    for index in range(len(listofnums) - 1):
-        if veb.successor(listofnums[index]) != listofnums[index+1]:
+    for index in range(len(sorted_numbers) - 1):
+        if veb.successor(sorted_numbers[index]) != sorted_numbers[index+1]:
             error += 1
     print('Error Number For successor was {}'.format(error))
 
     print('Testing for predecessor')
     # test for predecessor
     error = 0
-    for index in range(1, len(listofnums)):
-        if veb.predecessor(listofnums[index]) != listofnums[index-1]:
+    for index in range(1, len(sorted_numbers)):
+        if veb.predecessor(sorted_numbers[index]) != sorted_numbers[index-1]:
             error += 1
     print('Error Number for predecessor was {}'.format(error))
 
