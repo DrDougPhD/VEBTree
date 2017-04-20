@@ -24,7 +24,8 @@ def test_correctness(n=DEFAULT_TEST_SIZE):
         non_member_numbers.add(random.randint(0, veb.u-1))
     
     print('Adding numbers to VEB Tree')
-    for num in list(numbers):
+    # TODO: Implement an insert_all function
+    for num in numbers:
         veb.insert(num)
     
     print('Testing for membership of numbers')
@@ -41,8 +42,7 @@ def test_correctness(n=DEFAULT_TEST_SIZE):
 
     print('Testing for successor')
     # test for successor
-    listofnums = list(numbers)
-    listofnums.sort()
+    listofnums = sorted(numbers)
     error = 0
     for index in range(len(listofnums) - 1):
         if veb.successor(listofnums[index]) != listofnums[index+1]:
